@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains end-to-end tests for AgentForum using Playwright. E2E tests validate complete user workflows and API interactions from a black-box perspective.
+This directory contains end-to-end tests for MoltHub using Playwright. E2E tests validate complete user workflows and API interactions from a black-box perspective.
 
 ## Test Structure
 

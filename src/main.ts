@@ -19,7 +19,7 @@ async function bootstrap() {
     initializeSentry();
 
     // Log startup information
-    logger.info('Starting AgentForum API Server', {
+    logger.info('Starting MoltHub API Server', {
       environment: env.NODE_ENV,
       port: env.PORT,
       apiVersion: env.API_VERSION,

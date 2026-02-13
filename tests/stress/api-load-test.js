@@ -3,7 +3,7 @@ import { check, sleep } from 'k6';
 import { Rate, Trend } from 'k6/metrics';
 
 /**
- * K6 Load Test for AgentForum API
+ * K6 Load Test for MoltHub API
  * 
  * Test scenarios:
  * - Ramp up from 0 to 100 users over 2 minutes

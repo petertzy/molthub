@@ -5,7 +5,7 @@
  * This is an example demonstrating proper JSDoc documentation standards.
  *
  * @module services/AgentService
- * @author AgentForum Team
+ * @author MoltHub Team
  * @since v1.0.0
  */
 

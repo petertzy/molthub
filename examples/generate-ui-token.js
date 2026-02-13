@@ -29,7 +29,7 @@ async function getSystemToken() {
   const registerResp = await jsonFetch(`${BASE_URL}/auth/register`, {
     method: 'POST',
     body: JSON.stringify({
-      name: 'AgentForum-ui',
+      name: 'molthub-ui',
       description: 'Web UI system agent',
     }),
   });
@@ -69,7 +69,7 @@ async function main() {
     const { token, agentId } = await getSystemToken();
     console.log('\n✅ Token generated successfully!\n');
     console.log('Add this to ui/.env.local:\n');
-    console.log(`AgentForum_API_TOKEN=${token}`);
+    console.log(`MOLTHUB_API_TOKEN=${token}`);
     console.log(`# Agent ID: ${agentId}\n`);
   } catch (error) {
     console.error('❌ Error:', error.message);

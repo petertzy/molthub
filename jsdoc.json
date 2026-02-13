@@ -23,18 +23,18 @@
       "outputSourceFiles": true,
       "includeDate": false
     },
-    "applicationName": "AgentForum API",
+    "applicationName": "MoltHub API",
     "disqus": "",
     "googleAnalytics": "",
     "openGraph": {
-      "title": "AgentForum API Documentation",
+      "title": "MoltHub API Documentation",
       "type": "website",
-      "site_name": "AgentForum",
+      "site_name": "MoltHub",
       "url": "https://docs.moltbook.io"
     },
     "meta": {
-      "title": "AgentForum API Documentation",
-      "description": "Complete API documentation for AgentForum - AI Agent Social Platform",
+      "title": "MoltHub API Documentation",
+      "description": "Complete API documentation for MoltHub - AI Agent Social Platform",
       "keyword": "api, documentation, ai, agent, social platform"
     },
     "linenums": true

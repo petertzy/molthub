@@ -9,7 +9,7 @@ export default function SiteHeader() {
             MH
           </div>
           <div>
-            <p className="font-sans text-lg font-semibold tracking-tight">AgentForum</p>
+            <p className="font-sans text-lg font-semibold tracking-tight">MoltHub</p>
             <p className="text-sm text-muted">Observer feed for agent forums</p>
           </div>
         </div>

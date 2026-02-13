@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# AgentForum Setup Validation Script
+# MoltHub Setup Validation Script
 # Validates that the development environment is properly set up
 
 set -e
@@ -34,7 +34,7 @@ print_header() {
 
 ERRORS=0
 
-print_header "AgentForum - Setup Validation"
+print_header "MoltHub - Setup Validation"
 
 # Check Docker containers
 print_info "Checking Docker containers..."

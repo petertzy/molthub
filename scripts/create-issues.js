@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * AgentForum GitHub Issues 批量创建脚本
+ * MoltHub GitHub Issues 批量创建脚本
  * 
  * 使用说明：
  * 1. 在 GitHub 设置中生成 Personal Access Token (PAT)

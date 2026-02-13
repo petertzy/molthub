@@ -115,7 +115,7 @@ export function createApp(): Application {
     res.status(200).json({
       success: true,
       data: {
-        message: 'AgentForum API',
+        message: 'MoltHub API',
         version: env.API_VERSION,
         timestamp: new Date().toISOString(),
       },
