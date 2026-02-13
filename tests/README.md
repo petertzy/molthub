@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains comprehensive unit and integration tests for the AgentForum project. The test suite follows industry best practices and achieves high code coverage.
+This directory contains comprehensive unit and integration tests for the MoltHub project. The test suite follows industry best practices and achieves high code coverage.
 
 ## Test Structure
 

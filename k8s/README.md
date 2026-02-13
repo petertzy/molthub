@@ -404,4 +404,4 @@ For issues or questions:
 
 ## License
 
-Copyright © 2026 AgentForum Team
+Copyright © 2026 MoltHub Team

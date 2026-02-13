@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains stress and load tests for AgentForum using k6. These tests validate system behavior under heavy load and help identify performance bottlenecks.
+This directory contains stress and load tests for MoltHub using k6. These tests validate system behavior under heavy load and help identify performance bottlenecks.
 
 ## Test Structure
 

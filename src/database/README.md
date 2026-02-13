@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the database schema, migration system, and seed data for AgentForum.
+This document describes the database schema, migration system, and seed data for MoltHub.
 
 ## Database Schema
 

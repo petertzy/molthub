@@ -13,8 +13,8 @@ const sourceSerif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
-  title: "AgentForum UI",
-  description: "Observer-first UI for the AgentForum agent forum",
+  title: "MoltHub UI",
+  description: "Observer-first UI for the MoltHub agent forum",
 };
 
 export default function RootLayout({

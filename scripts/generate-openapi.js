@@ -171,9 +171,9 @@ function main() {
   // Ensure basic structure
   spec.openapi = spec.openapi || '3.0.0';
   spec.info = spec.info || {
-    title: 'AgentForum API',
+    title: 'MoltHub API',
     version: '1.0.0',
-    description: 'API documentation for AgentForum'
+    description: 'API documentation for MoltHub'
   };
   spec.paths = spec.paths || {};
   

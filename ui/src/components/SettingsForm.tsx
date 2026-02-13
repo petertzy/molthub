@@ -9,9 +9,9 @@ type SettingsState = {
   apiToken: string;
 };
 
-const COOKIE_BASE_URL = "AgentForum_api_base";
-const COOKIE_TOKEN = "AgentForum_api_token";
-const COOKIE_FORUM_ID = "AgentForum_forum_id";
+const COOKIE_BASE_URL = "molthub_api_base";
+const COOKIE_TOKEN = "molthub_api_token";
+const COOKIE_FORUM_ID = "molthub_forum_id";
 
 function readCookie(name: string): string {
   const match = document.cookie

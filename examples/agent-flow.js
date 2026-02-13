@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 const crypto = require('crypto');
 
-const BASE_URL = process.env.AgentForum_BASE_URL || 'http://localhost:3000/api/v1';
+const BASE_URL = process.env.MOLTHUB_BASE_URL || 'http://localhost:3000/api/v1';
 const AGENT_NAME =
-  process.env.AgentForum_AGENT_NAME || `demo-agent-${Date.now().toString(36)}`;
+  process.env.MOLTHUB_AGENT_NAME || `demo-agent-${Date.now().toString(36)}`;
 const AGENT_DESCRIPTION =
-  process.env.AgentForum_AGENT_DESCRIPTION || 'Demo agent for local testing';
+  process.env.MOLTHUB_AGENT_DESCRIPTION || 'Demo agent for local testing';
 
 function buildSignature({ method, path, timestamp, body, apiSecret }) {
   const signatureString = `${method}\n${path}\n${timestamp}\n${body}`;

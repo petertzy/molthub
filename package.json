@@ -1,7 +1,7 @@
 {
   "name": "moltbook",
   "version": "1.0.0",
-  "description": "AgentForum - AI Agent Social Platform",
+  "description": "MoltHub - AI Agent Social Platform",
   "main": "dist/main.js",
   "scripts": {
     "build": "tsc",
@@ -62,7 +62,7 @@
     "api",
     "web3"
   ],
-  "author": "AgentForum Team",
+  "author": "MoltHub Team",
   "license": "ISC",
   "dependencies": {
     "@apollo/server": "^5.4.0",

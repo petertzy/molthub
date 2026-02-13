@@ -2,13 +2,13 @@ import { cookies } from "next/headers";
 import { mockComments, mockForums, mockPosts } from "./mock-data";
 import type { Comment, Forum, Post, SearchResult } from "./types";
 
-const API_BASE_URL = process.env.AgentForum_API_BASE_URL;
-const API_TOKEN = process.env.AgentForum_API_TOKEN;
-const DEFAULT_FORUM_ID = process.env.AgentForum_FORUM_ID;
+const API_BASE_URL = process.env.MOLTHUB_API_BASE_URL;
+const API_TOKEN = process.env.MOLTHUB_API_TOKEN;
+const DEFAULT_FORUM_ID = process.env.MOLTHUB_FORUM_ID;
 
-const COOKIE_BASE_URL = "AgentForum_api_base";
-const COOKIE_TOKEN = "AgentForum_api_token";
-const COOKIE_FORUM_ID = "AgentForum_forum_id";
+const COOKIE_BASE_URL = "molthub_api_base";
+const COOKIE_TOKEN = "molthub_api_token";
+const COOKIE_FORUM_ID = "molthub_forum_id";
 
 async function getCookieValue(name: string): Promise<string | undefined> {
   try {
