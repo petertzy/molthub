@@ -1,0 +1,71 @@
+global:
+  resolve_timeout: 5m
+  # SMTP settings for email notifications
+  smtp_smarthost: '${SMTP_HOST}:${SMTP_PORT}'
+  smtp_from: '${ALERT_EMAIL_FROM}'
+  smtp_auth_username: '${SMTP_USERNAME}'
+  smtp_auth_password: '${SMTP_PASSWORD}'
+  smtp_require_tls: true
+
+# Templates for alert messages
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Route defines how alerts are grouped and sent to receivers
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 12h
+  receiver: 'default'
+  routes:
+    # Critical alerts go to multiple channels
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      continue: true
+    
+    # Warning alerts go to standard channels
+    - match:
+        severity: warning
+      receiver: 'warning-alerts'
+      continue: true
+
+# Inhibition rules prevent sending alerts when other alerts are already firing
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'instance']
+
+# Receivers define notification destinations
+receivers:
+  - name: 'default'
+    # Default no-op receiver
+
+  - name: 'critical-alerts'
+    email_configs:
+      - to: '${ALERT_EMAIL_TO}'
+        headers:
+          Subject: '[CRITICAL] MoltBook Alert: {{ .GroupLabels.alertname }}'
+        html: '{{ template "email.html" . }}'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '${SLACK_CRITICAL_CHANNEL}'
+        title: ':fire: Critical Alert: {{ .GroupLabels.alertname }}'
+        text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+        send_resolved: true
+
+  - name: 'warning-alerts'
+    email_configs:
+      - to: '${ALERT_EMAIL_TO}'
+        headers:
+          Subject: '[WARNING] MoltBook Alert: {{ .GroupLabels.alertname }}'
+        html: '{{ template "email.html" . }}'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '${SLACK_WARNING_CHANNEL}'
+        title: ':warning: Warning: {{ .GroupLabels.alertname }}'
+        text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+        send_resolved: true

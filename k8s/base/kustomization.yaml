@@ -1,0 +1,49 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: moltbook
+
+resources:
+  # Namespace
+  - namespace.yaml
+  
+  # Configuration
+  - configmap.yaml
+  - secret.yaml
+  
+  # Application
+  - app-deployment.yaml
+  - app-service.yaml
+  - app-pdb.yaml
+  - app-hpa.yaml
+  
+  # PostgreSQL
+  - postgres-config.yaml
+  - postgres-secret.yaml
+  - postgres-init-config.yaml
+  - postgres-statefulset.yaml
+  - postgres-service.yaml
+  
+  # Redis
+  - redis-config.yaml
+  - redis-secret.yaml
+  - redis-statefulset.yaml
+  - redis-sentinel-statefulset.yaml
+  - redis-service.yaml
+  
+  # Ingress and TLS
+  - ingress.yaml
+  - cert-issuer.yaml
+  - certificate.yaml
+  
+  # Backup
+  - backup-scripts.yaml
+  - backup-cronjob.yaml
+  - backup-pvc.yaml
+  
+  # Monitoring and Alerting
+  - prometheus-config.yaml
+  - prometheus-deployment.yaml
+  - alertmanager-config.yaml
+  - alertmanager-deployment.yaml
+  - grafana-deployment.yaml

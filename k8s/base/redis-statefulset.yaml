@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: moltbook
+  labels:
+    app: redis
+    tier: cache
+spec:
+  serviceName: redis-headless
+  replicas: 3
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        tier: cache
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - redis
+              topologyKey: kubernetes.io/hostname
+      initContainers:
+      - name: init-redis
+        image: redis:7-alpine
+        command:
+        - sh
+        - -c
+        - |
+          set -ex
+          # Get pod ordinal index
+          ordinal=${HOSTNAME##*-}
+          
+          # Copy base config
+          if [ "$ordinal" = "0" ]; then
+            echo "Configuring as master"
+            cp /mnt/config/master.conf /etc/redis/redis.conf
+          else
+            echo "Configuring as replica"
+            cp /mnt/config/replica.conf /etc/redis/redis.conf
+            echo "replicaof redis-0.redis-headless.moltbook.svc.cluster.local 6379" >> /etc/redis/redis.conf
+          fi
+          
+          # Set password if provided
+          if [ ! -z "$REDIS_PASSWORD" ]; then
+            echo "requirepass $REDIS_PASSWORD" >> /etc/redis/redis.conf
+            echo "masterauth $REDIS_PASSWORD" >> /etc/redis/redis.conf
+          fi
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: REDIS_PASSWORD
+        volumeMounts:
+        - name: config
+          mountPath: /mnt/config
+        - name: redis-config
+          mountPath: /etc/redis
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        command: ["redis-server", "/etc/redis/redis.conf"]
+        ports:
+        - name: redis
+          containerPort: 6379
+          protocol: TCP
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: REDIS_PASSWORD
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        - name: redis-config
+          mountPath: /etc/redis
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - redis-cli -a "$REDIS_PASSWORD" ping
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - redis-cli -a "$REDIS_PASSWORD" ping
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+      volumes:
+      - name: config
+        configMap:
+          name: redis-config
+      - name: redis-config
+        emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: redis-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi

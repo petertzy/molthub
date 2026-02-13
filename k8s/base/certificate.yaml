@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: moltbook-tls-cert
+  namespace: moltbook
+spec:
+  secretName: moltbook-tls-cert
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: api.moltbook.io
+  dnsNames:
+  - api.moltbook.io
+  - www.moltbook.io

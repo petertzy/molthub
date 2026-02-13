@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-scripts
+  namespace: moltbook
+data:
+  01-create-replication-user.sh: |
+    #!/bin/bash
+    set -e
+    
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+        -- Create replication user
+        CREATE USER replicator WITH REPLICATION ENCRYPTED PASSWORD '${REPLICATION_PASSWORD}';
+        
+        -- Grant necessary permissions
+        GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO replicator;
+    EOSQL
+    
+    echo "Replication user created successfully"
+  
+  02-setup-replication.sh: |
+    #!/bin/bash
+    set -e
+    
+    # Check if this is a replica (not postgres-0)
+    if [ "$HOSTNAME" != "postgres-0" ]; then
+        echo "Setting up as replica node: $HOSTNAME"
+        
+        # Wait for master to be ready
+        until pg_isready -h postgres-0.postgres-headless.moltbook.svc.cluster.local -p 5432; do
+            echo "Waiting for master to be ready..."
+            sleep 2
+        done
+        
+        echo "Master is ready. Starting base backup..."
+        
+        # Stop postgres temporarily
+        pg_ctl -D "$PGDATA" -m fast -w stop || true
+        
+        # Remove existing data
+        rm -rf "$PGDATA"/*
+        
+        # Create base backup from master
+        PGPASSWORD="$REPLICATION_PASSWORD" pg_basebackup \
+            -h postgres-0.postgres-headless.moltbook.svc.cluster.local \
+            -D "$PGDATA" \
+            -U replicator \
+            -v -P -X stream
+        
+        # Create standby signal file for PostgreSQL 12+
+        touch "$PGDATA/standby.signal"
+        
+        # Configure recovery
+        cat >> "$PGDATA/postgresql.auto.conf" <<-EOF
+    primary_conninfo = 'host=postgres-0.postgres-headless.moltbook.svc.cluster.local port=5432 user=replicator password=$REPLICATION_PASSWORD'
+    EOF
+        
+        echo "Replica setup complete"
+    else
+        echo "This is the master node: $HOSTNAME"
+    fi

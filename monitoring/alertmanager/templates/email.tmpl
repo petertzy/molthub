@@ -1,0 +1,106 @@
+{{ define "email.html" }}
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .alert-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .alert-header {
+            background-color: {{ if eq .Status "firing" }}#d32f2f{{ else }}#388e3c{{ end }};
+            color: white;
+            padding: 15px;
+            border-radius: 5px 5px 0 0;
+        }
+        .alert-body {
+            border: 1px solid #ddd;
+            border-top: none;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+        }
+        .alert-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .alert-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .alert-value {
+            color: #333;
+        }
+        .severity-critical {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+        .severity-warning {
+            color: #f57c00;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="alert-container">
+        <div class="alert-header">
+            <h2>{{ if eq .Status "firing" }}🔥 ALERT FIRING{{ else }}✅ ALERT RESOLVED{{ end }}</h2>
+        </div>
+        <div class="alert-body">
+            {{ range .Alerts }}
+            <div class="alert-item">
+                <h3>{{ .Labels.alertname }}</h3>
+                
+                <p><span class="alert-label">Severity:</span> 
+                    <span class="severity-{{ .Labels.severity }}">{{ .Labels.severity | toUpper }}</span>
+                </p>
+                
+                <p><span class="alert-label">Description:</span><br>
+                    <span class="alert-value">{{ .Annotations.description }}</span>
+                </p>
+                
+                {{ if .Annotations.summary }}
+                <p><span class="alert-label">Summary:</span><br>
+                    <span class="alert-value">{{ .Annotations.summary }}</span>
+                </p>
+                {{ end }}
+                
+                <p><span class="alert-label">Instance:</span> 
+                    <span class="alert-value">{{ .Labels.instance }}</span>
+                </p>
+                
+                <p><span class="alert-label">Started:</span> 
+                    <span class="alert-value">{{ .StartsAt.Format "2006-01-02 15:04:05 UTC" }}</span>
+                </p>
+                
+                {{ if .EndsAt }}
+                <p><span class="alert-label">Ended:</span> 
+                    <span class="alert-value">{{ .EndsAt.Format "2006-01-02 15:04:05 UTC" }}</span>
+                </p>
+                {{ end }}
+            </div>
+            {{ end }}
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated alert from MoltBook Monitoring System.</p>
+            <p>Generated at: {{ .CommonAnnotations.timestamp }}</p>
+        </div>
+    </div>
+</body>
+</html>
+{{ end }}

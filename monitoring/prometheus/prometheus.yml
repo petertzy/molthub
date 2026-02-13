@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'moltbook-monitor'
+
+# Load alert rules
+rule_files:
+  - 'alerts.yml'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
+scrape_configs:
+  - job_name: 'moltbook-api'
+    static_configs:
+      - targets: ['app:3000']
+    metrics_path: '/monitoring/metrics'
+    scrape_interval: 10s

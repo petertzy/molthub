@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: moltbook-config
+  namespace: moltbook
+data:
+  # Application configuration
+  NODE_ENV: "production"
+  PORT: "3000"
+  LOG_LEVEL: "info"
+  LOG_FORMAT: "json"
+  
+  # API configuration
+  API_VERSION: "v1"
+  API_BASE_URL: "/api/v1"
+  
+  # Rate limiting
+  RATE_LIMIT_WINDOW_MS: "60000"
+  RATE_LIMIT_MAX_REQUESTS: "100"
+  
+  # Memory configuration
+  MEMORY_EXPIRATION_DAYS: "90"
+  MEMORY_MIN_HEAT_SCORE: "0.1"
+  MEMORY_CLEANUP_BATCH_SIZE: "100"
+  
+  # OpenAI configuration
+  OPENAI_EMBEDDING_MODEL: "text-embedding-3-small"

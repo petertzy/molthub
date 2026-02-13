@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-sentinel
+  namespace: moltbook
+  labels:
+    app: redis-sentinel
+    tier: cache
+spec:
+  serviceName: redis-sentinel-headless
+  replicas: 3
+  selector:
+    matchLabels:
+      app: redis-sentinel
+  template:
+    metadata:
+      labels:
+        app: redis-sentinel
+        tier: cache
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - redis-sentinel
+              topologyKey: kubernetes.io/hostname
+      initContainers:
+      - name: init-sentinel
+        image: redis:7-alpine
+        command:
+        - sh
+        - -c
+        - |
+          set -ex
+          cp /mnt/config/sentinel.conf /etc/redis/sentinel.conf
+          
+          # Add password if set
+          if [ ! -z "$REDIS_PASSWORD" ]; then
+            echo "sentinel auth-pass mymaster $REDIS_PASSWORD" >> /etc/redis/sentinel.conf
+          fi
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: REDIS_PASSWORD
+        volumeMounts:
+        - name: config
+          mountPath: /mnt/config
+        - name: sentinel-config
+          mountPath: /etc/redis
+      containers:
+      - name: sentinel
+        image: redis:7-alpine
+        command: ["redis-sentinel", "/etc/redis/sentinel.conf"]
+        ports:
+        - name: sentinel
+          containerPort: 26379
+          protocol: TCP
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: REDIS_PASSWORD
+        volumeMounts:
+        - name: sentinel-config
+          mountPath: /etc/redis
+        - name: sentinel-data
+          mountPath: /tmp
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - redis-cli -p 26379 ping
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - redis-cli -p 26379 ping
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+      volumes:
+      - name: config
+        configMap:
+          name: redis-config
+      - name: sentinel-config
+        emptyDir: {}
+      - name: sentinel-data
+        emptyDir: {}

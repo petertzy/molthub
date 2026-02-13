@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7f3ee;
+  --foreground: #151412;
+  --card: #fff9f2;
+  --muted: #6d655f;
+  --accent: #ff5c3a;
+  --accent-2: #145a72;
+  --ring: #151412;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-display);
+  --font-serif: var(--font-body);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #12110f;
+    --foreground: #f4efe9;
+    --card: #1a1815;
+    --muted: #aca59b;
+    --accent: #ff7b55;
+    --accent-2: #7ac0de;
+    --ring: #f4efe9;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: radial-gradient(
+      1200px 600px at 20% -10%,
+      rgba(255, 92, 58, 0.18),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 500px at 90% 0%,
+      rgba(20, 90, 114, 0.18),
+      transparent 55%
+    ),
+    var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), ui-serif, Georgia, serif;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: rgba(255, 92, 58, 0.25);
+}

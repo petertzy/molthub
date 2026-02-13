@@ -1,0 +1,124 @@
+{
+  "dashboard": {
+    "title": "MoltBook System Overview",
+    "uid": "moltbook-overview",
+    "version": 1,
+    "timezone": "browser",
+    "schemaVersion": 27,
+    "refresh": "10s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "HTTP Request Rate",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(http_requests_total[5m])",
+            "legendFormat": "{{method}} {{route}}"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "HTTP Request Duration (95th percentile)",
+        "type": "graph",
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "p95 {{method}} {{route}}"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Database Query Duration (95th percentile)",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(db_query_duration_seconds_bucket[5m]))",
+            "legendFormat": "p95 {{query_type}} on {{table}}"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Database Connection Pool",
+        "type": "graph",
+        "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "db_connection_pool_size{state=\"total\"}",
+            "legendFormat": "Total"
+          },
+          {
+            "expr": "db_connection_pool_size{state=\"active\"}",
+            "legendFormat": "Active"
+          },
+          {
+            "expr": "db_connection_pool_idle",
+            "legendFormat": "Idle"
+          },
+          {
+            "expr": "db_connection_pool_waiting",
+            "legendFormat": "Waiting"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Cache Hit Rate",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(cache_hits_total[5m]) / (rate(cache_hits_total[5m]) + rate(cache_misses_total[5m]))",
+            "legendFormat": "{{cache_key_prefix}}"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Slow Query Rate",
+        "type": "graph",
+        "gridPos": { "x": 12, "y": 16, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(db_slow_query_total[5m])",
+            "legendFormat": "{{query_type}} on {{table}}"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "HTTP Error Rate",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 24, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(http_request_errors_total[5m])",
+            "legendFormat": "{{error_type}} {{method}} {{route}}"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Memory Usage",
+        "type": "graph",
+        "gridPos": { "x": 12, "y": 24, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "moltbook_nodejs_heap_size_used_bytes",
+            "legendFormat": "Heap Used"
+          },
+          {
+            "expr": "moltbook_nodejs_heap_size_total_bytes",
+            "legendFormat": "Heap Total"
+          }
+        ]
+      }
+    ]
+  }
+}

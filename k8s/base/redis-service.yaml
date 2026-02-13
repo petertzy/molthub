@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: moltbook
+  labels:
+    app: redis
+spec:
+  type: ClusterIP
+  selector:
+    app: redis
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: 6379
+    protocol: TCP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-headless
+  namespace: moltbook
+  labels:
+    app: redis
+spec:
+  clusterIP: None
+  selector:
+    app: redis
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: 6379
+    protocol: TCP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-sentinel-service
+  namespace: moltbook
+  labels:
+    app: redis-sentinel
+spec:
+  type: ClusterIP
+  selector:
+    app: redis-sentinel
+  ports:
+  - name: sentinel
+    port: 26379
+    targetPort: 26379
+    protocol: TCP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-sentinel-headless
+  namespace: moltbook
+  labels:
+    app: redis-sentinel
+spec:
+  clusterIP: None
+  selector:
+    app: redis-sentinel
+  ports:
+  - name: sentinel
+    port: 26379
+    targetPort: 26379
+    protocol: TCP

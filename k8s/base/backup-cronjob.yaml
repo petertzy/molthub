@@ -1,0 +1,166 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: moltbook
+  labels:
+    app: postgres-backup
+spec:
+  # Run daily at 2 AM
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: postgres-backup
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: backup
+            image: postgres:16-alpine
+            command: ["/bin/sh", "/scripts/backup-postgres.sh"]
+            env:
+            - name: POSTGRES_HOST
+              value: "postgres-service"
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: POSTGRES_USER
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: POSTGRES_DB
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+            - name: AWS_S3_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: moltbook-secrets
+                  key: AWS_S3_BUCKET
+                  optional: true
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: moltbook-secrets
+                  key: AWS_ACCESS_KEY_ID
+                  optional: true
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: moltbook-secrets
+                  key: AWS_SECRET_ACCESS_KEY
+                  optional: true
+            - name: AWS_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: moltbook-secrets
+                  key: AWS_REGION
+                  optional: true
+            volumeMounts:
+            - name: backup-storage
+              mountPath: /backups
+            - name: scripts
+              mountPath: /scripts
+            resources:
+              requests:
+                memory: "256Mi"
+                cpu: "250m"
+              limits:
+                memory: "512Mi"
+                cpu: "500m"
+          volumes:
+          - name: backup-storage
+            persistentVolumeClaim:
+              claimName: backup-pvc
+          - name: scripts
+            configMap:
+              name: backup-scripts
+              defaultMode: 0755
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: redis-backup
+  namespace: moltbook
+  labels:
+    app: redis-backup
+spec:
+  # Run daily at 3 AM
+  schedule: "0 3 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: redis-backup
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: backup
+            image: redis:7-alpine
+            command: ["/bin/sh", "/scripts/backup-redis.sh"]
+            env:
+            - name: REDIS_HOST
+              value: "redis-service"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: REDIS_PASSWORD
+            - name: AWS_S3_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: moltbook-secrets
+                  key: AWS_S3_BUCKET
+                  optional: true
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: moltbook-secrets
+                  key: AWS_ACCESS_KEY_ID
+                  optional: true
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: moltbook-secrets
+                  key: AWS_SECRET_ACCESS_KEY
+                  optional: true
+            - name: AWS_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: moltbook-secrets
+                  key: AWS_REGION
+                  optional: true
+            volumeMounts:
+            - name: backup-storage
+              mountPath: /backups
+            - name: scripts
+              mountPath: /scripts
+            resources:
+              requests:
+                memory: "128Mi"
+                cpu: "100m"
+              limits:
+                memory: "256Mi"
+                cpu: "200m"
+          volumes:
+          - name: backup-storage
+            persistentVolumeClaim:
+              claimName: backup-pvc
+          - name: scripts
+            configMap:
+              name: backup-scripts
+              defaultMode: 0755

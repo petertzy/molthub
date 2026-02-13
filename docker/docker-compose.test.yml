@@ -1,0 +1,43 @@
+services:
+  # PostgreSQL Database - Test
+  postgres-test:
+    image: postgres:16-alpine
+    container_name: moltbook-postgres-test
+    environment:
+      POSTGRES_DB: moltbook_test
+      POSTGRES_USER: moltbook_test_user
+      POSTGRES_PASSWORD: moltbook_test_password
+    ports:
+      - '5433:5432'
+    volumes:
+      - ../src/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U moltbook_test_user -d moltbook_test']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - moltbook-test-network
+    tmpfs:
+      - /var/lib/postgresql/data
+
+  # Redis Cache - Test
+  redis-test:
+    image: redis:7-alpine
+    container_name: moltbook-redis-test
+    ports:
+      - '6380:6379'
+    command: redis-server --maxmemory 64mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - moltbook-test-network
+    tmpfs:
+      - /data
+
+networks:
+  moltbook-test-network:
+    driver: bridge

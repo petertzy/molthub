@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  namespace: moltbook
+data:
+  master.conf: |
+    # Network
+    bind 0.0.0.0
+    port 6379
+    
+    # General
+    protected-mode no
+    tcp-backlog 511
+    timeout 0
+    tcp-keepalive 300
+    
+    # Persistence
+    save 900 1
+    save 300 10
+    save 60 10000
+    stop-writes-on-bgsave-error yes
+    rdbcompression yes
+    rdbchecksum yes
+    dbfilename dump.rdb
+    dir /data
+    
+    # Replication
+    min-replicas-to-write 1
+    min-replicas-max-lag 10
+    
+    # Memory
+    maxmemory 512mb
+    maxmemory-policy allkeys-lru
+    
+    # AOF
+    appendonly yes
+    appendfilename "appendonly.aof"
+    appendfsync everysec
+    no-appendfsync-on-rewrite no
+    auto-aof-rewrite-percentage 100
+    auto-aof-rewrite-min-size 64mb
+    
+    # Security
+    # requirepass will be set via environment variable
+  
+  replica.conf: |
+    # Network
+    bind 0.0.0.0
+    port 6379
+    
+    # General
+    protected-mode no
+    tcp-backlog 511
+    timeout 0
+    tcp-keepalive 300
+    
+    # Replication
+    replica-read-only yes
+    replica-serve-stale-data yes
+    replica-priority 100
+    
+    # Memory
+    maxmemory 512mb
+    maxmemory-policy allkeys-lru
+    
+    # Persistence
+    save ""
+    appendonly no
+  
+  sentinel.conf: |
+    # Sentinel configuration
+    port 26379
+    dir /tmp
+    
+    # Monitor master
+    sentinel monitor mymaster redis-0.redis-headless.moltbook.svc.cluster.local 6379 2
+    sentinel down-after-milliseconds mymaster 5000
+    sentinel parallel-syncs mymaster 1
+    sentinel failover-timeout mymaster 10000
+    
+    # Notification scripts (optional)
+    # sentinel notification-script mymaster /path/to/notification-script.sh
+    # sentinel client-reconfig-script mymaster /path/to/reconfig-script.sh
