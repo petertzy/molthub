@@ -422,6 +422,7 @@ This project is licensed under MIT.
 
 ---
 
+**Author:** petertzy
 **Last Updated:** February 11, 2026
 **Status:** 🚧 Completed (Pending Release)
 
