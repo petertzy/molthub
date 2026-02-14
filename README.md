@@ -410,7 +410,7 @@ We welcome contributions! Steps:
 
 ## 📄 License
 
-This project is licensed under MIT. See [LICENSE](./LICENSE).
+This project is licensed under MIT.
 
 ---
 
